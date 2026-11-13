@@ -112,28 +112,29 @@
   if(document.readyState==='complete')startIntro();else addEventListener('load',startIntro,{once:true});
 
   // Absolute IST instant: every guest sees the same remaining duration worldwide.
+  const celebrationDayStartsAt=Date.parse('2027-02-10T00:00:00+05:30');
   const receptionStartsAt=Date.parse('2027-02-10T19:00:00+05:30');
 
   function celebrationPhase(now){
     if(now<Date.parse('2027-02-10T00:00:00+05:30'))return 'before';
     if(now<receptionStartsAt)return 'today';
     if(now<Date.parse('2027-02-10T22:00:00+05:30'))return 'reception';
-    if(now<Date.parse('2027-02-11T01:42:00+05:30'))return 'wedding';
+    if(now<Date.parse('2027-02-11T01:04:00+05:30'))return 'wedding';
     if(now<Date.parse('2027-02-12T00:00:00+05:30'))return 'married';
     return 'thanks';
   }
   function updateDayGuide(){
     const phase=celebrationPhase(Date.now());
-    const messages={today:['TODAY, WE CELEBRATE','Reception begins at 7 PM. The wedding follows after midnight at 1:42 AM.'],reception:['THE RECEPTION HAS BEGUN','Join us until 10 PM at Summer Green Resort.'],wedding:['NEXT, THE WEDDING','Muhurtham is at 1:42 AM on 11 February, at the same venue.'],married:['OUR WEDDING DAY','Our muhurtham has arrived. Thank you for your love and blessings.'],thanks:['WITH HEARTFELT THANKS','Thank you for being part of our beginning, near or far.']};
+    const messages={today:['TODAY, WE CELEBRATE','Reception begins at 7 PM. The wedding follows after midnight at 1:04 AM.'],reception:['THE RECEPTION HAS BEGUN','Join us until 10 PM at Summer Green Resort.'],wedding:['NEXT, THE WEDDING','Muhurtham is at 1:04 AM on 11 February, at the same venue.'],married:['OUR WEDDING DAY','Our muhurtham has arrived. Thank you for your love and blessings.'],thanks:['WITH HEARTFELT THANKS','Thank you for being part of our beginning, near or far.']};
     const guide=document.querySelector('#day-guide');guide.hidden=phase==='before'||phase==='thanks';
     const message=messages[phase];
     if(message){document.querySelector('#day-guide-title').textContent=tr(message[0]);document.querySelector('#day-guide-copy').textContent=tr(message[1]);}
-    document.querySelector('#countdown-title').textContent=tr(['reception','wedding','married','thanks'].includes(phase)?message[0]:'UNTIL OUR CELEBRATIONS BEGIN');
-    document.querySelector('#countdown-complete').textContent=tr(message?message[1]:'The countdown is complete. A lifetime together begins.');
-    document.querySelector('.countdown-date').hidden=['reception','wedding','married','thanks'].includes(phase);
+    document.querySelector('#countdown-title').textContent=tr(phase==='before'?'UNTIL CELEBRATION DAY':phase==='today'?'CELEBRATION DAY IS HERE':message[0]);
+    document.querySelector('#countdown-complete').textContent=tr(phase==='today'?'Celebration Day is here. We can’t wait to see you!':message?message[1]:'Celebration Day is here. We can’t wait to see you!');
+    document.querySelector('.countdown-date').hidden=phase!=='before';
   }
   function countdownParts(now){
-    const total=Math.max(0,Math.ceil((receptionStartsAt-now)/1000));
+    const total=Math.max(0,Math.ceil((celebrationDayStartsAt-now)/1000));
     return {days:Math.floor(total/86400),hours:Math.floor(total%86400/3600),minutes:Math.floor(total%3600/60),seconds:total%60,complete:total===0};
   }
   const countdown=document.querySelector('#countdown');
@@ -152,8 +153,8 @@
 
   /* Calendar data uses explicit IST offsets. No server or external library is needed. */
   const calendarEvents=[
-    ['wedding','Wedding','2027-02-11T01:42:00+05:30',null,'Summer Green Resort, Thumkunta, Shamirpet, Secunderabad, Telangana 500078','Muhurtham: 1:42 AM IST on 11 February, after midnight following the reception on 10 February.'],
-    ['reception','Reception','2027-02-10T19:00:00+05:30','2027-02-10T22:00:00+05:30','Summer Green Resort, Thumkunta, Shamirpet, Secunderabad, Telangana 500078','Reception: 7:00–10:00 PM IST on 10 February. Wedding follows after midnight, at 1:42 AM on 11 February.']
+    ['wedding','Wedding','2027-02-11T01:04:00+05:30',null,'Summer Green Resort, Thumkunta, Shamirpet, Secunderabad, Telangana 500078','Muhurtham: 1:04 AM IST on 11 February, after midnight following the reception on 10 February.'],
+    ['reception','Reception','2027-02-10T19:00:00+05:30','2027-02-10T22:00:00+05:30','Summer Green Resort, Thumkunta, Shamirpet, Secunderabad, Telangana 500078','Reception: 7:00–10:00 PM IST on 10 February. Wedding follows after midnight, at 1:04 AM on 11 February.']
   ];
   const utc=t=>new Date(t).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
   const escape=s=>s.replace(/\\/g,'\\\\').replace(/\r?\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
@@ -181,7 +182,7 @@
   });
   // Each illustration detail is a real keyboard-accessible button.
   let selectedScene='couple';
-  const sceneCopy={couple:['THE TWO OF US','Sriya & Sai RaviRaj','Two journeys, one new beginning. We cannot wait to share it with you.'],moment:['BENEATH THE MOON','11 February · 1:42 AM','After the reception on 10 February, join us after midnight for our wedding at Summer Green Resort.'],wish:['A LIGHT FOR OUR BEGINNING','Love, laughter, and your blessings.','May our home always be filled with warmth, kindness, and the people we love.']};
+  const sceneCopy={couple:['THE TWO OF US','Sriya & Sai RaviRaj','Two journeys, one new beginning. We cannot wait to share it with you.'],moment:['BENEATH THE MOON','11 February · 1:04 AM','After the reception on 10 February, join us after midnight for our wedding at Summer Green Resort.'],wish:['A LIGHT FOR OUR BEGINNING','Love, laughter, and your blessings.','May our home always be filled with warmth, kindness, and the people we love.']};
   function renderIllustration(){
     const copy=sceneCopy[selectedScene];
     ['illustration-kicker','illustration-heading','illustration-description'].forEach((id,i)=>document.getElementById(id).textContent=tr(copy[i]));

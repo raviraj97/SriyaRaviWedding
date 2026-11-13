@@ -2732,3 +2732,10 @@ body.printing-card .card-rule {
   color:#f7eddb!important}
 .photo-album-button:hover {
   background:#ffffff0a!important}
+
+/* Keep the groom’s full parent names legible at every width. */
+.parents .parent-names {font-size:clamp(24px,3.3vw,36px);line-height:1.45;overflow-wrap:anywhere}
+.parents .parent-names span {display:block}
+.parents .parent-names i {display:block;padding:2px 0}
+html[lang="te"] .parents .parent-names {font-size:clamp(23px,3vw,32px);line-height:1.8}
+@media(max-width:620px){.parents .parent-names{font-size:clamp(22px,6vw,29px)}}
