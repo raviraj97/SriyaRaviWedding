@@ -1,0 +1,114 @@
+/* Full-viewport doorway. The art uses cover sizing; its two leaves stay aligned
+   with the original image coordinates, including on portrait screens. */
+html {
+  --hero-height: 100vh;
+}
+@supports (height: 100svh) {
+  html { --hero-height: 100svh; }
+}
+.door-chapter { --emerge: 1; }
+.motion-ready .door-chapter { height: calc(var(--hero-height) + 850px); }
+.door-sticky {
+  height: var(--hero-height);
+  min-height: 0;
+  top: 0;
+  padding: 0;
+  overflow: clip;
+  background: #f9f4e9;
+  isolation: isolate;
+}
+.door-stage {
+  position: absolute;
+  width: max(100vw, calc(var(--hero-height) * .8003));
+  height: auto;
+  max-width: none;
+  aspect-ratio: 1122 / 1402;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -52.275%);
+  transform-origin: center;
+  opacity: calc(1 - var(--emerge) * .78);
+  z-index: 1;
+}
+.door-scene { mix-blend-mode: normal; }
+.door-sticky::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, #f9f4e9f2 10%, #f9f4e966 75%);
+  opacity: var(--emerge);
+  pointer-events: none;
+  z-index: 2;
+}
+.opening-title {
+  top: max(84px, env(safe-area-inset-top));
+  left: 12px;
+  right: 12px;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  margin: 0 auto;
+  padding: 7px 16px;
+  background: #fff8e8e8;
+  border: 1px solid #bf9a60;
+  color: #74432b;
+  font-size: 14px;
+  z-index: 3;
+}
+.hero-names, html[lang="te"] .hero-names {
+  top: 50%;
+  left: 20px;
+  right: 20px;
+  bottom: auto;
+  transform: translateY(-50%);
+  z-index: 4;
+}
+.motion-ready .hero-names {
+  transform: translateY(calc(-50% + (1 - var(--emerge)) * 25px));
+}
+html:not(.motion-ready) .hero-names { transform: translateY(-50%); }
+.hero-controls {
+  bottom: max(22px, env(safe-area-inset-bottom));
+  left: 12px;
+  right: 12px;
+  z-index: 5;
+}
+.hero-controls .scroll-cue {
+  width: fit-content;
+  max-width: 100%;
+  padding: 5px 13px;
+  margin: 0 auto;
+  background: #fff9eceb;
+  color: #674c32;
+  border-radius: 2px;
+}
+.hero-controls .open-button {
+  background: #fff9eceb;
+  color: #633b2e;
+  opacity: 1;
+  padding: 5px 14px;
+}
+header .brand { background: #fff9eceb; padding: 10px 13px; border-radius: 2px; }
+header .skip { background: #fff9eceb; padding: 8px 12px; color: #633b2e; }
+header .header-actions { padding-right: 260px; }
+@media (max-width: 800px) {
+  header .header-actions { position: static; padding-right: 245px; }
+  header .skip { display: none; }
+  .opening-title { top: 82px; font-size: 12px; }
+}
+@media (max-width: 620px) {
+  .hero-names h1 { font-size: clamp(42px, 11vw, 59px); }
+  .hero-controls { bottom: max(18px, env(safe-area-inset-bottom)); }
+}
+@media (max-height: 500px) and (min-width: 621px) {
+  .opening-title { top: 72px; font-size: 11px; }
+  .hero-names h1 { font-size: 48px; }
+  .hero-names .eyebrow { margin-bottom: 8px; }
+  .hero-date { margin-top: 12px; }
+  .hero-controls { bottom: 10px; }
+  .hero-controls .open-button { min-height: 30px; }
+}
+@media print {
+  .door-stage, .door-sticky::after, .opening-title { display: none; }
+  .door-sticky { height: auto; padding: 20px; }
+  .hero-names, html[lang="te"] .hero-names { position: static; transform: none !important; }
+}
