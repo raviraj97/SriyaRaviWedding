@@ -112,3 +112,19 @@ header .header-actions { padding-right: 260px; }
   .door-sticky { height: auto; padding: 20px; }
   .hero-names, html[lang="te"] .hero-names { position: static; transform: none !important; }
 }
+
+/* The doorway monogram becomes an infinity mark as the doors open. */
+.door-chapter { --mark-reveal: 0; }
+.door-monogram { display:grid; place-items:center; min-height:88px; }
+.monogram-initials, .monogram-infinity { grid-area:1 / 1; display:block; }
+.monogram-initials { opacity:calc(1 - var(--mark-reveal)); transform:scale(calc(1 - var(--mark-reveal) * .18)); }
+.monogram-infinity { opacity:var(--mark-reveal); transform:scale(calc(.55 + var(--mark-reveal) * .45)) rotate(calc((1 - var(--mark-reveal)) * -12deg)); font:74px/.9 Georgia,serif; color:#a57f46; }
+.brand { position:fixed; top:max(14px, env(safe-area-inset-top)); left:5vw; z-index:20; display:grid; place-items:center; min-width:56px; min-height:48px; }
+.brand > .brand-initials, .brand > .brand-infinity { grid-area:1 / 1; padding:0; transition:opacity .55s ease,transform .55s ease; }
+.brand > .brand-infinity { opacity:0; transform:scale(.6) rotate(-15deg); font:43px/1 Georgia,serif; color:#a57f46; }
+.forever-visible .brand-initials { opacity:0; transform:scale(.65); }
+.forever-visible .brand-infinity { opacity:1; transform:scale(1) rotate(0); }
+.forever-emblem { font:clamp(72px,10vw,112px)/.85 Georgia,serif; color:#a57f46; margin-bottom:10px; }
+.forever-caption { font:12px/1.5 var(--sans); letter-spacing:.2em; text-transform:uppercase; color:#866b49; margin-bottom:24px; }
+@media (prefers-reduced-motion:reduce) { .brand-initials, .brand-infinity { transition:none; } }
+@media print { .brand-initials { opacity:1!important; } .brand-infinity { display:none; } }

@@ -27,10 +27,12 @@
   const root=document.documentElement, motion=matchMedia('(prefers-reduced-motion: reduce)');
   const chapter=document.querySelector('.door-chapter'),sticky=document.querySelector('.door-sticky'),left=document.querySelector('.door-leaf.left'),right=document.querySelector('.door-leaf.right'),inside=document.querySelector('.invitation-inside'),label=document.querySelector('#scroll-label'),welcome=document.querySelector('.welcome'),closing=document.querySelector('.closing'),muggu=document.querySelector('.muggu'),events=[...document.querySelectorAll('.event')];
   const toggle=document.querySelector('#motion-toggle'),openButton=document.querySelector('#open-invitation'),note=document.querySelector('#motion-note');
+  const talambraluGrains=[...document.querySelectorAll('.talambralu-shower i')];
   const clamp=x=>Math.max(0,Math.min(1,x));
-  let enabled=true,frame=0,playFrame=0,manual=null,current=0,introTimer=0,savedScrollBehavior=null,introCancelled=false;
+  let enabled=!motion.matches,frame=0,playFrame=0,manual=null,current=0,introTimer=0,savedScrollBehavior=null,introCancelled=false;
   function sync(){
     root.classList.toggle('motion-ready',enabled);
+    if(!enabled)root.classList.add('forever-visible');
     toggle.textContent=tr(enabled?'Reduce motion':'Enable animation');toggle.setAttribute('aria-pressed',String(enabled));
     note.textContent=enabled?'':tr('Motion is reduced. Tap “Play door animation” to watch it.');
     openButton.textContent=tr(enabled?'Open invitation':'Play door animation');
@@ -41,6 +43,8 @@
     left.style.setProperty('--shade',opening*.45);right.style.setProperty('--shade',opening*.45);
     inside.style.setProperty('--reveal',clamp((opening-.08)/.65));
     chapter.style.setProperty('--emerge',clamp((opening-.5)/.5));
+    chapter.style.setProperty('--mark-reveal',clamp((opening-.24)/.46));
+    root.classList.toggle('forever-visible',opening>.68);
     label.textContent=tr(opening>.95?'Scroll to the celebrations':opening>.05?'A beautiful beginning awaits':'Scroll to open the doors');
     openButton.textContent=tr(opening>.95?'Replay door opening':'Open invitation');
   }
@@ -50,6 +54,15 @@
     const dusk=document.querySelector('.dusk-transition'),duskBox=dusk.getBoundingClientRect();
     const nightProgress=clamp((h*.9-duskBox.top)/(duskBox.height+h*.25));
     dusk.style.setProperty('--dusk',enabled?nightProgress:1);
+    const fall=clamp((h*.72-duskBox.top)/(duskBox.height+h*.2));
+    talambraluGrains.forEach(grain=>{
+      const start=parseFloat(grain.style.getPropertyValue('--start'));
+      const drift=parseFloat(grain.style.getPropertyValue('--drift'));
+      const turn=parseFloat(grain.style.getPropertyValue('--turn'));
+      const travel=clamp((fall-start)*2.6);
+      grain.style.opacity=String(3*travel*(1-travel));
+      grain.style.transform=`translate3d(${drift*travel}px,${(duskBox.height+24)*travel}px,0) rotate(${turn+125*travel}deg)`;
+    });
     root.classList.toggle('past-intro',chapter.getBoundingClientRect().bottom<h*.55);
     document.querySelectorAll('.mobile-shortcuts a').forEach(link=>{const box=document.getElementById(link.dataset.section).getBoundingClientRect();if(box.top<h*.55&&box.bottom>h*.3)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');});
     if(closing.getBoundingClientRect().top<h*.85)closing.classList.add('is-revealed');
@@ -99,8 +112,7 @@
   let lastScroll=scrollY;
   function onScroll(){if(!playFrame&&scrollY<lastScroll&&chapter.getBoundingClientRect().top>=-1)manual=null;lastScroll=scrollY;queue();}
   addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',queue);addEventListener('pageshow',queue);
-  // This invitation explicitly starts with motion enabled. The visible control
-  // still lets each guest turn it off immediately; no stale saved state can hide it.
+  // Follow the device motion preference on every fresh visit.
   sync();queue();
   function startIntro(){
     if(!enabled || scrollY>80)return;
@@ -126,12 +138,9 @@
   function updateDayGuide(){
     const phase=celebrationPhase(Date.now());
     const messages={today:['TODAY, WE CELEBRATE','Reception begins at 7 PM. The wedding follows after midnight at 1:04 AM.'],reception:['THE RECEPTION HAS BEGUN','Join us until 10 PM at Summer Green Resort.'],wedding:['NEXT, THE WEDDING','Muhurtham is at 1:04 AM on 11 February, at the same venue.'],married:['OUR WEDDING DAY','Our muhurtham has arrived. Thank you for your love and blessings.'],thanks:['WITH HEARTFELT THANKS','Thank you for being part of our beginning, near or far.']};
-    const guide=document.querySelector('#day-guide');guide.hidden=phase==='before'||phase==='thanks';
+    const guide=document.querySelector('#day-guide');guide.hidden=phase==='before';
     const message=messages[phase];
     if(message){document.querySelector('#day-guide-title').textContent=tr(message[0]);document.querySelector('#day-guide-copy').textContent=tr(message[1]);}
-    document.querySelector('#countdown-title').textContent=tr(phase==='before'?'UNTIL CELEBRATION DAY':phase==='today'?'CELEBRATION DAY IS HERE':message[0]);
-    document.querySelector('#countdown-complete').textContent=tr(phase==='today'?'Celebration Day is here. We can’t wait to see you!':message?message[1]:'Celebration Day is here. We can’t wait to see you!');
-    document.querySelector('.countdown-date').hidden=phase!=='before';
   }
   function countdownParts(now){
     const total=Math.max(0,Math.ceil((celebrationDayStartsAt-now)/1000));
@@ -140,8 +149,8 @@
   const countdown=document.querySelector('#countdown');
   function updateCountdown(){
     const parts=countdownParts(Date.now());
+    document.querySelector('.countdown-section').hidden=parts.complete;
     countdown.hidden=parts.complete;
-    document.querySelector('#countdown-complete').hidden=!parts.complete;
     for(const unit of ['days','hours','minutes','seconds'])document.querySelector('#countdown-'+unit).textContent=String(parts[unit]).padStart(2,'0');
     updateDayGuide();
   }
@@ -192,9 +201,21 @@
   document.querySelectorAll('[data-scene]').forEach(button=>button.addEventListener('click',()=>{selectedScene=button.dataset.scene;renderIllustration();}));
   const traditionalDialog=document.querySelector('#traditional-dialog');
   let bodyOverflow='';
+  const cardTelugu=document.querySelector('.subhalekha[lang="te"]');
+  const cardEnglish=document.querySelector('.english-card');
+  const cardTeluguButton=document.querySelector('#card-language-te');
+  const cardEnglishButton=document.querySelector('#card-language-en');
+  function setCardLanguage(next){
+    cardTelugu.hidden=next!=='te';cardEnglish.hidden=next!=='en';
+    cardTeluguButton.setAttribute('aria-pressed',String(next==='te'));
+    cardEnglishButton.setAttribute('aria-pressed',String(next==='en'));
+    traditionalDialog.scrollTop=0;
+  }
+  cardTeluguButton.addEventListener('click',()=>setCardLanguage('te'));
+  cardEnglishButton.addEventListener('click',()=>setCardLanguage('en'));
   document.querySelector('#traditional-open').addEventListener('click',()=>{
     takeOver();bodyOverflow=document.body.style.overflow;document.body.style.overflow='hidden';
-    traditionalDialog.showModal();traditionalDialog.scrollTop=0;
+    setCardLanguage(language);traditionalDialog.showModal();traditionalDialog.scrollTop=0;
   });
   document.querySelector('#traditional-close').addEventListener('click',()=>traditionalDialog.close());
   traditionalDialog.addEventListener('close',()=>{document.body.style.overflow=bodyOverflow;document.body.classList.remove('printing-card');document.querySelector('#traditional-open').focus({preventScroll:true});});
