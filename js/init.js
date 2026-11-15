@@ -8,4 +8,4 @@ addEventListener('pageshow', () => {
   scrollTo(0, 0);
   requestAnimationFrame(() => { root.style.scrollBehavior = previous; });
 });
-if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('motion-ready');
+document.documentElement.classList.add('motion-ready');

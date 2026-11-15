@@ -41,34 +41,6 @@ a:focus-visible,button:focus-visible {
   outline-offset:5px}
 ::selection {
   background:#e8d7b9}
-header {
-  height:76px;
-  position:absolute;
-  inset:0 0 auto;
-  z-index:10;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 5vw;
-  border-top:4px solid var(--wine)}
-.brand {
-  font:26px/1 var(--serif);
-  color:var(--wine)}
-.brand span {
-  color:var(--gold);
-  padding:0 8px;
-  font-size:22px}
-.skip {
-  font-size:13px;
-  color:var(--muted);
-  border-bottom:1px solid var(--line);
-  padding:5px 0}
-.skip:hover {
-  color:var(--wine)}
-.header-actions {
-  display:flex;
-  align-items:center;
-  gap:22px}
 #motion-toggle {
   font:12px var(--sans);
   border:0;
@@ -500,17 +472,8 @@ html:not(.motion-ready) .timeline:after {
 }
 
 @media(max-width:700px) {
-  header {
-  height:63px;
-  padding:0 6vw}
-.header-actions {
-  gap:16px}
 #motion-toggle {
   font-size:11px}
-.brand {
-  font-size:24px}
-.skip {
-  font-size:12px}
 .door-sticky {
   min-height:560px;
   padding-top:66px;
@@ -660,7 +623,7 @@ html:not(.motion-ready) .muggu path {
 }
 
 @media print {
-  header,.scroll-cue,.chapter-date,.opening-divider,.event-links,.save-button,.toast {
+  .scroll-cue,.chapter-date,.opening-divider,.event-links,.save-button,.toast {
   display:none}
 .door-chapter {
   height:auto}
@@ -762,13 +725,11 @@ html {
 .motion-note:empty {
   display:none}
 
-#motion-toggle,.skip {
+#motion-toggle {
   min-height:44px;
   display:inline-flex;
   align-items:center;
   font-size:12px}
-.header-actions {
-  gap:18px}
 
 .opening-title {
   font-size:14px}
@@ -879,11 +840,7 @@ h1 {
 }
 
 @media(max-width:360px) {
-  header {
-  padding:0 14px}
-.header-actions {
-  gap:10px}
-#motion-toggle,.skip {
+#motion-toggle {
   font-size:11px}
 .inside-kicker {
   margin-bottom:6px}
@@ -1371,7 +1328,7 @@ to {
   font:italic .55em Georgia,serif;
   margin:0;
   color:var(--gold)}
-.hero-names h1 span {
+.hero-names h1 > span {
   display:inline}
 
 .hero-date {
@@ -1691,7 +1648,7 @@ html:not(.motion-ready) .door-chapter {
   font-size:clamp(42px,11vw,59px);
   gap:5px 12px;
   line-height:1.02}
-.hero-names h1 span:last-child {
+.hero-names h1 > span:last-child {
   flex-basis:100%}
 .hero-names .eyebrow {
   font-size:9px;
@@ -1912,8 +1869,6 @@ html:not(.motion-ready) .door-chapter {
 .guest-controls #language-toggle {
   font-family:'Telugu Sangam MN','Nirmala UI',sans-serif;
   min-width:64px}
-.header-actions {
-  padding-right:215px}
 .sr-only {
   position:absolute;
   width:1px;
@@ -2021,13 +1976,6 @@ html[lang="te"] .signature {
   line-height:1.8}
 
 @media(max-width:800px) {
-  .header-actions {
-  padding-right:0;
-  position:absolute;
-  left:16px;
-  right:16px;
-  top:64px;
-  justify-content:space-between}
 .opening-title {
   top:109px}
 .door-stage {
@@ -2062,8 +2010,6 @@ html[lang="te"] .signature {
   padding:7px 10px}
 .guest-controls #language-toggle {
   min-width:59px}
-.header-actions {
-  top:60px}
 html[lang="te"] .hero-names h1 {
   font-size:clamp(29px,7.7vw,40px);
   line-height:1.55;
@@ -2145,15 +2091,82 @@ html[lang="te"] .dusk-transition>p {
   color:var(--muted)}
 
 .day-guide {
-  max-width:850px;
-  margin:40px auto;
-  padding:28px;
-  text-align:center;
-  border:1px solid var(--line);
-  background:#fffaf0}
-.day-guide>p:not(.eyebrow) {
-  font:23px/1.5 var(--serif);
-  margin:14px 0}
+  width: min(720px, calc(100% - 36px));
+  margin: clamp(28px, 6vw, 54px) auto;
+  padding: clamp(28px, 5vw, 50px) clamp(18px, 5vw, 48px);
+  text-align: center;
+  border: 1px solid var(--line);
+  background: radial-gradient(ellipse at 50% 0, #f1d49b44, transparent 72%), #fffaf0;
+}
+.day-guide h2 {
+  color: var(--wine);
+  font: clamp(31px, 5vw, 54px)/1.15 var(--serif);
+}
+#day-guide-copy {
+  max-width: 36em;
+  margin: 12px auto 8px;
+  color: var(--muted);
+  font: 15px/1.7 var(--sans);
+}
+.day-lamps {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 24px;
+  height: 53px;
+  margin: 0 auto 16px;
+}
+.day-lamps::before,
+.day-lamps::after {
+  content: '';
+  align-self: end;
+  width: clamp(20px, 7vw, 56px);
+  height: 1px;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, transparent, var(--gold));
+}
+.day-lamps::after { transform: scaleX(-1); }
+.day-lamp {
+  position: relative;
+  width: 44px;
+  height: 16px;
+  border: 1px solid #8a5427;
+  border-radius: 3px 3px 24px 24px;
+  background: linear-gradient(#f5d78b, #bf842f 50%, #804021);
+}
+.day-lamp::after {
+  content: '';
+  position: absolute;
+  inset: 3px 3px auto;
+  height: 1px;
+  background: #fbe4aa9c;
+}
+.day-lamp-flame {
+  position: absolute;
+  bottom: 100%;
+  left: calc(50% - 7px);
+  width: 14px;
+  height: 24px;
+  border-radius: 80% 25% 68% 48%;
+  transform: rotate(-10deg);
+  transform-origin: center bottom;
+  background: radial-gradient(ellipse at 50% 72%, #fff8d3 12%, #ffcf65 48%, #ef9039 90%);
+  box-shadow: 0 0 17px 4px #f2ac4761;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .motion-ready .day-guide.lights-on-entry .day-lamp-flame { opacity: 0; }
+  .motion-ready .day-guide.is-lit .day-lamp-flame {
+    animation: day-lamp-light 900ms ease-out both;
+  }
+  .motion-ready .day-guide.is-lit .day-lamp:nth-child(2) .day-lamp-flame {
+    animation-delay: 160ms;
+  }
+}
+@keyframes day-lamp-light {
+  0% { opacity: 0; transform: rotate(-10deg) scale(.24); }
+  58% { opacity: 1; transform: rotate(4deg) scale(1.12); }
+  100% { opacity: 1; transform: rotate(-10deg) scale(1); }
+}
 .day-guide-actions {
   display:flex;
   justify-content:center;
@@ -2257,9 +2270,6 @@ html[lang=te] .midnight-marker strong {
 .midnight-marker {
   padding:10px 0;
   border-block:1px dashed var(--line)}
-.day-guide {
-  margin:24px 18px;
-  padding:22px 18px}
 .personal-note {
   font-size:15px!important;
   margin-inline:auto}

@@ -17,10 +17,13 @@
     language=next;document.documentElement.lang=next;
     translationNodes.forEach(({node,original,key})=>node.textContent=next==='te'?original.replace(key,telugu[key]):original);
     translationAttributes.forEach(({el,name,value})=>el.setAttribute(name,tr(value)));
+    const parts=next==='te'?[['శ్రి','య'],['సా','యి రవిరాజ్']]:[['S','riya'],['S','ai RaviRaj']];
+    document.querySelectorAll('.hero-names .name-initial').forEach((el,i)=>el.textContent=parts[i][0]);
+    document.querySelectorAll('.hero-names .name-rest').forEach((el,i)=>el.textContent=parts[i][1]);
     languageButton.textContent=next==='en'?'తెలుగు':'English';languageButton.lang=next==='en'?'te':'en';
     languageButton.setAttribute('aria-label',next==='en'?'View invitation in Telugu':'View invitation in English');
     document.title=next==='en'?'Sriya & Sai RaviRaj · You’re invited':'శ్రియ & సాయి రవిరాజ్ · శుభ వివాహ ఆహ్వానం';
-    sync();update();updateDayGuide();updateBlessingText();renderIllustration();
+    sync();update();updateCelebration();updateBlessingText();renderIllustration();
   }
   languageButton.addEventListener('click',()=>setLanguage(language==='en'?'te':'en'));
 
@@ -29,24 +32,88 @@
   const toggle=document.querySelector('#motion-toggle'),openButton=document.querySelector('#open-invitation'),note=document.querySelector('#motion-note');
   const talambraluGrains=[...document.querySelectorAll('.talambralu-shower i')];
   const clamp=x=>Math.max(0,Math.min(1,x));
-  let enabled=!motion.matches,frame=0,playFrame=0,manual=null,current=0,introTimer=0,savedScrollBehavior=null,introCancelled=false;
+  let enabled=true,frame=0,playFrame=0,manual=null,current=0,introTimer=0,savedScrollBehavior=null,introCancelled=false;
+  const morphStage=document.querySelector('#morph-symbol'),morphLettersEls=[document.querySelector('#morph-left'),document.querySelector('#morph-right')];
+  const morphAmp=document.querySelector('#morph-amp'),infinity=document.querySelector('#morph-infinity');
+  const anchor=document.querySelector('.door-monogram');
+  const nameInitials=[...document.querySelectorAll('.hero-names .name-initial')];
+  const nameRests=[...document.querySelectorAll('.hero-names .name-rest')];
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  function morphLetters(opening,mark,names){
+    const bounds=anchor.getBoundingClientRect(),stickyBounds=sticky.getBoundingClientRect();
+    const cx=bounds.left+bounds.width/2-stickyBounds.left,cy=bounds.top+bounds.height/2-stickyBounds.top;
+    const visible=clamp((opening-.5)/.35);
+    morphStage.style.opacity=String(visible);
+    morphAmp.style.left=`${cx}px`;morphAmp.style.top=`${cy}px`;
+    morphAmp.style.opacity=String(1-clamp(mark/.3));
+    infinity.style.left=`${cx}px`;infinity.style.top=`${cy}px`;
+    const forming=names===0;
+    const join=forming?clamp((mark-.45)/.55):1;
+    morphStage.classList.toggle('is-forming',forming);
+    window.paintEntranceRibbons(cx,cy,join);
+    infinity.style.opacity=String(join===1?1-clamp((names-.18)/.18):0);
+    const targets=nameInitials.map(el=>{const b=el.getBoundingClientRect();return{x:b.left+b.width/2-stickyBounds.left,y:b.top+b.height/2-stickyBounds.top,size:parseFloat(getComputedStyle(el).fontSize)};});
+    const wrapped=targets[1].x<targets[0].x+90;
+    morphLettersEls.forEach((el,i)=>{
+      const side=i===0?-1:1;
+      let x=cx+side*56,y=cy,angle=0,size=70,opacity=visible;
+      if(names>0){
+        const split=clamp((names-.28)/.28),travel=clamp((names-.56)/.34);
+        x=cx+side*lerp(5,65,split);angle=side*90;
+        opacity=clamp((names-.32)/.16)*(1-clamp((names-.88)/.12));
+        if(names>.56){
+          if(i===1&&wrapped){
+            y=lerp(cy,targets[i].y,clamp((names-.56)/.14));
+            x=lerp(cx+65,targets[i].x,clamp((names-.70)/.20));
+            angle=lerp(side*90,0,clamp((names-.70)/.20));
+            size=lerp(70,targets[i].size,clamp((names-.70)/.20));
+          }else{
+            x=lerp(cx+side*65,targets[i].x,travel);
+            y=lerp(cy,targets[i].y,travel);
+            angle=lerp(side*90,0,travel);
+            size=lerp(70,targets[i].size,travel);
+          }
+        }
+      }else if(mark>0){
+        const turn=clamp((mark-.08)/.37);
+        x=cx+side*lerp(56,36,turn);angle=side*90*turn;
+        opacity=Number(join===0);
+      }
+      el.style.left=`${x}px`;el.style.top=`${y}px`;el.style.fontSize=`${size}px`;
+      el.style.transform=`translate(-50%,-50%) rotate(${angle}deg)`;
+      el.style.opacity=String(opacity);
+    });
+  }
+
   function sync(){
     root.classList.toggle('motion-ready',enabled);
-    if(!enabled)root.classList.add('forever-visible');
     toggle.textContent=tr(enabled?'Reduce motion':'Enable animation');toggle.setAttribute('aria-pressed',String(enabled));
     note.textContent=enabled?'':tr('Motion is reduced. Tap “Play door animation” to watch it.');
     openButton.textContent=tr(enabled?'Open invitation':'Play door animation');
   }
-  function paint(opening){
-    current=opening;const angle=opening*100;
+  function paint(progress){
+    current=progress;
+    // Door, monogram, and names have separate beats in one scroll-linked timeline.
+    const opening=clamp(progress/.49);
+    const mark=clamp((progress-.49)/.20);
+    const names=clamp((progress-.82)/.18);
+    const angle=opening*100;
     left.style.transform=`rotateY(${-angle}deg)`;right.style.transform=`rotateY(${angle}deg)`;
     left.style.setProperty('--shade',opening*.45);right.style.setProperty('--shade',opening*.45);
     inside.style.setProperty('--reveal',clamp((opening-.08)/.65));
-    chapter.style.setProperty('--emerge',clamp((opening-.5)/.5));
-    chapter.style.setProperty('--mark-reveal',clamp((opening-.24)/.46));
-    root.classList.toggle('forever-visible',opening>.68);
-    label.textContent=tr(opening>.95?'Scroll to the celebrations':opening>.05?'A beautiful beginning awaits':'Scroll to open the doors');
-    openButton.textContent=tr(opening>.95?'Replay door opening':'Open invitation');
+    chapter.style.setProperty('--emerge',names);
+    chapter.style.setProperty('--mark-reveal',mark);
+    chapter.style.setProperty('--s-turn',clamp(mark/.45));
+    chapter.style.setProperty('--s-fade',clamp((mark-.55)/.45));
+    chapter.style.setProperty('--mark-finish',clamp((mark-.45)/.55));
+    chapter.style.setProperty('--names-text',clamp((names-.70)/.30));
+    chapter.style.setProperty('--name-rest-reveal',clamp((names-.72)/.25));
+    chapter.style.setProperty('--first-letter-reveal',clamp((names-.88)/.12));
+    chapter.style.setProperty('--infinity-out',1-clamp((names-.04)/.18));
+    chapter.style.setProperty('--name-reveal',names);
+    morphLetters(opening,mark,names);
+    label.textContent=tr(progress>.95?'Scroll to the celebrations':progress>.82?'Our names, together':progress>.49?'A lifetime together':opening>.05?'A beautiful beginning awaits':'Scroll to open the doors');
+    openButton.textContent=tr(progress>.95?'Replay door opening':'Open invitation');
   }
   function update(){
     frame=0;const h=innerHeight;
@@ -83,13 +150,14 @@
   function playOpening(){
     stopPlay();if(!enabled)setMotion(true);
     const from=current>.95?0:current;manual=from;paint(from);let start;
+    const duration=5000*(1-from);
     savedScrollBehavior=root.style.scrollBehavior;root.style.scrollBehavior='auto';
     const release=chapter.getBoundingClientRect().top+scrollY+chapter.offsetHeight-sticky.offsetHeight-(parseFloat(getComputedStyle(sticky).top)||0);
     const scrollStart=Math.min(scrollY,release);
     window.scrollTo(0,scrollStart);
     function tick(time){
       if(start===undefined)start=time;
-      const p=clamp((time-start)/3200),ease=p*p*(3-2*p);
+      const p=clamp((time-start)/duration),ease=p*p*(3-2*p);
       // Finish at the sticky section's release point, including short screens.
       const chapterTop=chapter.getBoundingClientRect().top+scrollY;
       const stickyTop=parseFloat(getComputedStyle(sticky).top)||0;
@@ -112,53 +180,80 @@
   let lastScroll=scrollY;
   function onScroll(){if(!playFrame&&scrollY<lastScroll&&chapter.getBoundingClientRect().top>=-1)manual=null;lastScroll=scrollY;queue();}
   addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',queue);addEventListener('pageshow',queue);
-  // Follow the device motion preference on every fresh visit.
+  // Start the door on every fresh visit; guests can turn motion off with the visible control.
   sync();queue();
   function startIntro(){
     if(!enabled || scrollY>80)return;
     const art=new Image();
     art.src=new URL('images/doorway.jpg',document.baseURI).href;
-    const begin=()=>{if(!introCancelled&&enabled&&scrollY<80)introTimer=setTimeout(playOpening,900);};
+    const begin=()=>{if(!introCancelled&&enabled&&scrollY<80)introTimer=setTimeout(playOpening,650);};
     if(art.decode)art.decode().then(begin,begin);else if(art.complete)begin();else{art.onload=begin;art.onerror=begin;}
   }
   if(document.readyState==='complete')startIntro();else addEventListener('load',startIntro,{once:true});
 
-  // Absolute IST instant: every guest sees the same remaining duration worldwide.
-  const celebrationDayStartsAt=Date.parse('2027-02-10T00:00:00+05:30');
-  const receptionStartsAt=Date.parse('2027-02-10T19:00:00+05:30');
+  // Compare instants in Hyderabad time regardless of the guest's time zone.
+  const countdownSection = document.querySelector('.countdown-section');
+  const celebrationDay = Date.parse(countdownSection.querySelector('time').dateTime);
+  const dayGuide = document.getElementById('day-guide');
+  const guideTitle = document.getElementById('day-guide-title');
+  const guideCopy = document.getElementById('day-guide-copy');
+  const countdownUnits = ['days', 'hours', 'minutes', 'seconds'].map(unit =>
+    document.getElementById('countdown-' + unit)
+  );
+  const phases = [
+    [celebrationDay, 'Today, we celebrate', 'Reception begins at 7 PM. The wedding follows after midnight at 1:04 AM.'],
+    [Date.parse('2027-02-10T19:00:00+05:30'), 'The reception has begun', 'Join us until 10 PM at Summer Green Resort.'],
+    [Date.parse('2027-02-10T22:00:00+05:30'), 'Next, the wedding', 'Muhurtham is at 1:04 AM on 11 February, at the same venue.'],
+    [Date.parse('2027-02-11T01:04:00+05:30'), 'Our wedding day', 'Our muhurtham has arrived. Thank you for your love and blessings.'],
+    [Date.parse('2027-02-12T00:00:00+05:30'), 'With heartfelt thanks', 'Thank you for being part of our beginning, near or far.']
+  ];
+  let celebrationTimer;
+  let renderedMessage;
 
-  function celebrationPhase(now){
-    if(now<Date.parse('2027-02-10T00:00:00+05:30'))return 'before';
-    if(now<receptionStartsAt)return 'today';
-    if(now<Date.parse('2027-02-10T22:00:00+05:30'))return 'reception';
-    if(now<Date.parse('2027-02-11T01:04:00+05:30'))return 'wedding';
-    if(now<Date.parse('2027-02-12T00:00:00+05:30'))return 'married';
-    return 'thanks';
+  function updateCelebration() {
+    clearTimeout(celebrationTimer);
+    const now = Date.now();
+    const remaining = celebrationDay - now;
+    const waiting = remaining > 0;
+    countdownSection.hidden = !waiting;
+    dayGuide.hidden = waiting;
+
+    if (waiting) {
+      const total = Math.ceil(remaining / 1000);
+      const units = [Math.floor(total / 86400), Math.floor(total / 3600) % 24, Math.floor(total / 60) % 60, total % 60];
+      countdownUnits.forEach((element, index) => {
+        element.textContent = String(units[index]).padStart(2, '0');
+      });
+      // Align ticks to the countdown so an open tab also changes at midnight.
+      celebrationTimer = setTimeout(updateCelebration, remaining % 1000 || 1000);
+      return;
+    }
+
+    const upcoming = phases.findIndex(([start]) => start > now);
+    const [, title, copy] = phases[upcoming === -1 ? phases.length - 1 : upcoming - 1];
+    const messageKey = language + title;
+    if (renderedMessage !== messageKey) {
+      guideTitle.textContent = tr(title);
+      guideCopy.textContent = tr(copy);
+      renderedMessage = messageKey;
+    }
+    if (upcoming !== -1) celebrationTimer = setTimeout(updateCelebration, phases[upcoming][0] - now);
   }
-  function updateDayGuide(){
-    const phase=celebrationPhase(Date.now());
-    const messages={today:['TODAY, WE CELEBRATE','Reception begins at 7 PM. The wedding follows after midnight at 1:04 AM.'],reception:['THE RECEPTION HAS BEGUN','Join us until 10 PM at Summer Green Resort.'],wedding:['NEXT, THE WEDDING','Muhurtham is at 1:04 AM on 11 February, at the same venue.'],married:['OUR WEDDING DAY','Our muhurtham has arrived. Thank you for your love and blessings.'],thanks:['WITH HEARTFELT THANKS','Thank you for being part of our beginning, near or far.']};
-    const guide=document.querySelector('#day-guide');guide.hidden=phase==='before';
-    const message=messages[phase];
-    if(message){document.querySelector('#day-guide-title').textContent=tr(message[0]);document.querySelector('#day-guide-copy').textContent=tr(message[1]);}
+
+  if ('IntersectionObserver' in window) {
+    dayGuide.classList.add('lights-on-entry');
+    const lampObserver = new IntersectionObserver(([entry]) => {
+      if (entry.intersectionRatio < 0.35) return;
+      dayGuide.classList.add('is-lit');
+      lampObserver.disconnect();
+    }, {threshold: 0.35});
+    lampObserver.observe(dayGuide);
   }
-  function countdownParts(now){
-    const total=Math.max(0,Math.ceil((celebrationDayStartsAt-now)/1000));
-    return {days:Math.floor(total/86400),hours:Math.floor(total%86400/3600),minutes:Math.floor(total%3600/60),seconds:total%60,complete:total===0};
-  }
-  const countdown=document.querySelector('#countdown');
-  function updateCountdown(){
-    const parts=countdownParts(Date.now());
-    document.querySelector('.countdown-section').hidden=parts.complete;
-    countdown.hidden=parts.complete;
-    for(const unit of ['days','hours','minutes','seconds'])document.querySelector('#countdown-'+unit).textContent=String(parts[unit]).padStart(2,'0');
-    updateDayGuide();
-  }
-  let countdownInterval=0;
-  updateCountdown();
-  countdownInterval=setInterval(updateCountdown,1000);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateCountdown();});
-  addEventListener('pageshow',updateCountdown);
+  updateCelebration();
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) updateCelebration();
+  });
+  addEventListener('pageshow', updateCelebration);
 
   /* Calendar data uses explicit IST offsets. No server or external library is needed. */
   const calendarEvents=[

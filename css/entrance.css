@@ -87,12 +87,7 @@ html:not(.motion-ready) .hero-names { transform: translateY(-50%); }
   opacity: 1;
   padding: 5px 14px;
 }
-header .brand { background: #fff9eceb; padding: 10px 13px; border-radius: 2px; }
-header .skip { background: #fff9eceb; padding: 8px 12px; color: #633b2e; }
-header .header-actions { padding-right: 260px; }
 @media (max-width: 800px) {
-  header .header-actions { position: static; padding-right: 245px; }
-  header .skip { display: none; }
   .opening-title { top: 82px; font-size: 12px; }
 }
 @media (max-width: 620px) {
@@ -113,18 +108,44 @@ header .header-actions { padding-right: 260px; }
   .hero-names, html[lang="te"] .hero-names { position: static; transform: none !important; }
 }
 
-/* The doorway monogram becomes an infinity mark as the doors open. */
+/* Each S becomes one loop; the ampersand closes into their crossing. */
 .door-chapter { --mark-reveal: 0; }
-.door-monogram { display:grid; place-items:center; min-height:88px; }
-.monogram-initials, .monogram-infinity { grid-area:1 / 1; display:block; }
-.monogram-initials { opacity:calc(1 - var(--mark-reveal)); transform:scale(calc(1 - var(--mark-reveal) * .18)); }
-.monogram-infinity { opacity:var(--mark-reveal); transform:scale(calc(.55 + var(--mark-reveal) * .45)) rotate(calc((1 - var(--mark-reveal)) * -12deg)); font:74px/.9 Georgia,serif; color:#a57f46; }
-.brand { position:fixed; top:max(14px, env(safe-area-inset-top)); left:5vw; z-index:20; display:grid; place-items:center; min-width:56px; min-height:48px; }
-.brand > .brand-initials, .brand > .brand-infinity { grid-area:1 / 1; padding:0; transition:opacity .55s ease,transform .55s ease; }
-.brand > .brand-infinity { opacity:0; transform:scale(.6) rotate(-15deg); font:43px/1 Georgia,serif; color:#a57f46; }
-.forever-visible .brand-initials { opacity:0; transform:scale(.65); }
-.forever-visible .brand-infinity { opacity:1; transform:scale(1) rotate(0); }
+.door-monogram { position:relative; display:flex; align-items:center; justify-content:center; gap:10px; width:170px; height:92px; margin:auto; }
+.monogram-s { position:relative; display:grid; place-items:center; width:52px; height:62px; font:50px/1 Georgia,serif; }
+.monogram-s span { opacity:calc(1 - var(--s-fade,0)); transform:translateX(calc(var(--s-turn,0) * 15px)) rotate(calc(var(--s-turn,0) * 90deg)) scale(calc(1 - var(--s-turn,0) * .2)); }
+.monogram-s-right span { transform:translateX(calc(var(--s-turn,0) * -15px)) rotate(calc(var(--s-turn,0) * -90deg)) scale(calc(1 - var(--s-turn,0) * .2)); }
+.monogram-s::after { display:none; }
+.monogram-amp { z-index:1; font:30px/1 Georgia,serif; color:#a57f46; opacity:calc(1 - var(--mark-reveal)); transform:scale(calc(1 - var(--mark-reveal) * .65)); }
 .forever-emblem { font:clamp(72px,10vw,112px)/.85 Georgia,serif; color:#a57f46; margin-bottom:10px; }
 .forever-caption { font:12px/1.5 var(--sans); letter-spacing:.2em; text-transform:uppercase; color:#866b49; margin-bottom:24px; }
-@media (prefers-reduced-motion:reduce) { .brand-initials, .brand-infinity { transition:none; } }
-@media print { .brand-initials { opacity:1!important; } .brand-infinity { display:none; } }
+
+/* The completed mark grows into the names after the doors finish opening. */
+.door-chapter { --name-reveal:0; }
+.door-monogram { opacity:calc(1 - var(--name-reveal)); transform:translateY(calc(var(--name-reveal) * -25px)) scale(calc(1 + var(--name-reveal) * .5)); }
+.motion-ready .hero-names { transform:translateY(calc((1 - var(--emerge)) * 25px)) scale(calc(.9 + var(--emerge) * .1)); }
+
+.door-monogram::after { content:'∞'; position:absolute; inset:0; display:grid; place-items:center; font:88px/1 Georgia,serif; color:#a57f46; opacity:calc(var(--mark-finish,0) * var(--infinity-out,1)); transform:scale(calc(.9 + var(--mark-finish,0) * .1)); pointer-events:none; }
+
+/* The initials separate from the held infinity before the names resolve. */
+.motion-ready .hero-names { opacity:clamp(0,calc(var(--name-reveal,0) * 5),1); }
+.hero-names .eyebrow,.hero-names h1,.hero-names .hero-date { opacity:var(--names-text,1); }
+
+/* The same serif S glyphs travel from the door to the first letters of the names. */
+.motion-ready .door-monogram { opacity:0!important; transform:none!important; }
+.morph-symbol { position:absolute; inset:0; z-index:3; pointer-events:none; opacity:0; }
+.morph-letter,.morph-amp,.morph-infinity,.morph-ribbons { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
+.morph-letter { color:var(--wine); font:70px/1.08 var(--serif); letter-spacing:-1.5px; white-space:nowrap; transform-origin:center; }
+.morph-amp { color:var(--gold); font:30px/1 Georgia,serif; }
+.morph-infinity,.morph-ribbons { width:160px; height:100px; overflow:visible; }
+.morph-infinity { opacity:0; }
+.morph-ribbons { visibility:hidden; fill:var(--wine); }
+.morph-symbol.is-forming .morph-letter { font-family:Invitation,Georgia,serif; }
+.morph-infinity path { fill:none; stroke:var(--gold); stroke-width:5.5; stroke-linecap:round; stroke-linejoin:round; }
+.hero-names h1 > .person-name { display:inline-flex; align-items:baseline; }
+.hero-names .name-initial { font-weight:400; }
+.motion-ready .hero-names .name-initial { opacity:var(--first-letter-reveal,0); }
+.motion-ready .hero-names .name-rest { opacity:var(--name-rest-reveal,0); }
+html:not(.motion-ready) .morph-symbol { display:none; }
+@media print { .morph-symbol { display:none; } }
+
+@media(max-width:620px) { .hero-names h1 > .person-name:last-child { justify-content:center; } }

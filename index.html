@@ -23,22 +23,19 @@
 <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/entrance.css">
+<link rel="stylesheet" href="css/ritual-motion.css">
 <script src="js/init.js">
 </script>
 <script src="js/config.js" defer>
 </script>
 <script src="js/translations.js" defer>
 </script>
+<script src="js/entrance-morph.js" defer>
+</script>
 <script src="js/invitation.js" defer>
 </script>
 </head>
 <body>
-<header>
-<a href="#home" class="brand" aria-label="Sriya and Sai RaviRaj, back to top"><span class="brand-initials">S<span>&amp;</span>S</span><span class="brand-infinity" aria-hidden="true">∞</span></a>
-<div class="header-actions">
-<a class="skip" href="#celebrations">View events ↗</a>
-</div>
-</header>
 <div class="guest-controls" role="group" aria-label="Invitation options">
 <button type="button" id="traditional-open" aria-haspopup="dialog" aria-controls="traditional-dialog">Traditional card</button>
 <button type="button" id="language-toggle" lang="te" aria-label="View invitation in Telugu">తెలుగు</button>
@@ -54,6 +51,7 @@
 </div>
 <article class="subhalekha" lang="te" data-no-translate>
 <div class="card-corners" aria-hidden="true">✦</div>
+<img class="card-toranam" src="images/toranam.svg" alt="" width="520" height="64">
 <p class="card-invocation">శ్రీరస్తు · శుభమస్తు · అవిఘ్నమస్తు</p>
 <img class="card-deities" src="images/divine-blessings.webp" alt="Lord Ganesh; Lord Venkateswara Swamy with Goddess Lakshmi; and Lord Shiva with Goddess Parvathi" width="1920" height="819">
 <h2>శుభలేఖ</h2>
@@ -88,6 +86,7 @@
 </article>
 <article class="subhalekha english-card" lang="en" data-no-translate hidden>
 <div class="card-corners" aria-hidden="true">✦</div>
+<img class="card-toranam" src="images/toranam.svg" alt="" width="520" height="64">
 <p class="card-invocation">May all be auspicious</p>
 <img class="card-deities" src="images/divine-blessings.webp" alt="Lord Ganesh; Lord Venkateswara Swamy with Goddess Lakshmi; and Lord Shiva with Goddess Parvathi" width="1920" height="819">
 <h2>Wedding Invitation</h2>
@@ -134,7 +133,7 @@
 <div class="invitation-inside">
 <div class="inside-copy">
 <p class="inside-kicker">A BEAUTIFUL BEGINNING</p>
-<div class="door-monogram" aria-hidden="true"><span class="monogram-initials">S <i>&amp;</i> S</span><span class="monogram-infinity">∞</span></div>
+<div class="door-monogram" aria-hidden="true"><span class="monogram-s monogram-s-left"><span>S</span></span><span class="monogram-amp">&amp;</span><span class="monogram-s monogram-s-right"><span>S</span></span></div>
 <div class="inside-line" aria-hidden="true">
 </div>
 <p class="inside-date">10–11 February 2027</p>
@@ -150,12 +149,17 @@
 </div>
 </div>
 </div>
+<div class="morph-symbol" id="morph-symbol" aria-hidden="true">
+<span class="morph-letter" id="morph-left">S</span><span class="morph-amp" id="morph-amp">&amp;</span><span class="morph-letter" id="morph-right">S</span>
+<svg class="morph-ribbons" id="morph-ribbons" viewBox="-80 -50 160 100"><path/><path/></svg>
+<svg class="morph-infinity" id="morph-infinity" viewBox="0 0 160 100" aria-hidden="true"><path d="M80 50 C45 10 5 5 5 50 C5 95 45 90 80 50 M80 50 C115 90 155 95 155 50 C155 5 115 10 80 50"/></svg>
+</div>
 <div class="hero-names">
 <p class="eyebrow">TOGETHER WITH OUR FAMILIES</p>
 <h1>
-<span>Sriya</span>
+<span class="person-name"><span class="name-initial">S</span><span class="name-rest">riya</span></span>
 <i>&amp;</i>
-<span>Sai RaviRaj</span>
+<span class="person-name"><span class="name-initial">S</span><span class="name-rest">ai RaviRaj</span></span>
 </h1>
 <p class="hero-date">10–11 February 2027 <span>·</span> Hyderabad</p>
 </div>
@@ -188,9 +192,9 @@
 <figcaption>Sriya &amp; Sai RaviRaj</figcaption>
 </figure>
 </section>
-<section class="countdown-section" aria-labelledby="countdown-title">
+<section class="countdown-section" aria-labelledby="countdown-title" hidden>
 <p class="eyebrow" id="countdown-title">UNTIL CELEBRATION DAY</p>
-<div class="countdown" id="countdown" role="timer" aria-live="off" aria-label="Time remaining until Celebration Day" hidden>
+<div class="countdown" id="countdown" role="timer" aria-live="off" aria-label="Time remaining until Celebration Day">
 <div>
 <span id="countdown-days">00</span>
 <small>Days</small>
@@ -213,10 +217,14 @@
 </p>
 </section>
 <section id="day-guide" class="day-guide" aria-labelledby="day-guide-title" hidden>
-<p class="eyebrow" id="day-guide-title">
-</p>
-<p id="day-guide-copy">
-</p>
+<div class="day-lamps" aria-hidden="true">
+<span class="day-lamp"><span class="day-lamp-flame"></span></span>
+<span class="day-lamp"><span class="day-lamp-flame"></span></span>
+</div>
+<div class="day-guide-message" aria-live="polite" aria-atomic="true">
+<h2 id="day-guide-title"></h2>
+<p id="day-guide-copy"></p>
+</div>
 <div class="day-guide-actions">
 <a href="#celebrations">View schedule ↗</a>
 <a href="#directions">Directions ↗</a>
@@ -421,18 +429,114 @@
 <details>
 <summary><span lang="te">జీలకర్ర బెల్లం</span><strong>Jeelakarra Bellam</strong></summary>
 <p>At the muhurtham, the couple place a cumin-and-jaggery mixture on each other’s heads, symbolizing a life shared through every experience.</p>
+<svg class="ritual-art ritual-ingredients" viewBox="0 0 248 88" aria-hidden="true">
+<defs>
+<linearGradient id="bellam-leaf" x2="0.55" y2="1">
+<stop stop-color="#a3ac62"/>
+<stop offset="1" stop-color="#46714a"/>
+</linearGradient>
+<linearGradient id="bellam-jaggery" x2="0.4" y2="1">
+<stop stop-color="#efbd75"/>
+<stop offset="1" stop-color="#af6a35"/>
+</linearGradient>
+<g id="bellam-cumin-seed">
+<path d="M-4 1 Q0 -3 4 -1 Q2 2 -4 1Z" fill="#dec08c"/>
+<path d="M-3.2 .7 Q.7 .2 3.3 -.8" fill="none" stroke="#775b3b" stroke-width=".6" stroke-linecap="round"/>
+</g>
+</defs>
+<path d="M51 65 C65 35 94 35 124 49 C151 36 181 41 197 52 C172 69 142 87 119 79 C95 84 68 77 51 65Z" fill="url(#bellam-leaf)" stroke="#c0c37e" stroke-width="1.15"/>
+<path d="M55 65 C96 65 144 67 193 53 M85 65 Q79 57 73 54 M103 66 Q98 73 89 75 M153 62 Q155 54 163 49 M171 59 L175 65" fill="none" stroke="#cad08d" stroke-width=".85" opacity=".76"/>
+<g class="ritual-cumin">
+<use href="#bellam-cumin-seed" transform="translate(99 61) rotate(-29)"/>
+<use href="#bellam-cumin-seed" transform="translate(106 55) rotate(15)"/>
+<use href="#bellam-cumin-seed" transform="translate(112 62) rotate(30)"/>
+<use href="#bellam-cumin-seed" transform="translate(96 53) rotate(49)"/>
+<use href="#bellam-cumin-seed" transform="translate(115 51) rotate(-38)"/>
+<use href="#bellam-cumin-seed" transform="translate(105 67) rotate(-8)"/>
+<use href="#bellam-cumin-seed" transform="translate(119 67) rotate(-42)"/>
+<use href="#bellam-cumin-seed" transform="translate(98 69) rotate(24)"/>
+</g>
+<g class="ritual-jaggery" fill="url(#bellam-jaggery)" stroke="#edc78a" stroke-width=".7" stroke-linejoin="round">
+<path d="M117 58 L120 49 131 46 138 52 134 61 123 64Z"/>
+<path d="M132 52 L139 46 149 49 155 56 147 63 136 60Z"/>
+<path d="M124 62 L135 57 145 60 143 69 134 72 125 68Z"/>
+<path d="M121 50 L129 53 136 52 M139 47 L143 53 152 55 M125 62 L133 65 142 61" fill="none" stroke="#fff0bc" opacity=".7"/>
+</g>
+</svg>
 </details>
 <details>
 <summary><span lang="te">మాంగల్య ధారణ</span><strong>Mangalya Dharana</strong></summary>
 <p>The groom ties the mangalsutra around the bride’s neck, marking their marriage.</p>
+<svg class="ritual-art ritual-knot" viewBox="0 0 248 75" aria-hidden="true">
+<path class="ritual-thread" pathLength="1" d="M9 54 C53 59 89 52 116 29 C135 13 157 15 163 30 C170 49 140 63 120 53 C100 43 92 20 76 24 C58 28 60 47 78 55 C99 64 113 48 130 41 C151 34 168 51 190 54 C208 57 225 56 239 51"/>
+</svg>
 </details>
 <details>
 <summary><span lang="te">తలంబ్రాలు</span><strong>Talambralu</strong></summary>
 <p>The couple joyfully shower each other with turmeric rice, sharing blessings and laughter.</p>
+<svg class="ritual-art ritual-rice" viewBox="0 0 248 88" aria-hidden="true">
+<defs>
+<linearGradient id="talambralu-brass" x2="0.2" y2="1">
+<stop stop-color="#ffe1a0"/>
+<stop offset=".44" stop-color="#d8a353"/>
+<stop offset="1" stop-color="#966035"/>
+</linearGradient>
+<g id="talambralu-bowl">
+<path d="M2 3 Q8 25 25 25 Q43 25 48 3Z" fill="url(#talambralu-brass)" stroke="#e5b977" stroke-width="1.1"/>
+<ellipse cx="25" cy="3" rx="23" ry="5" fill="#916136" stroke="#f0c887" stroke-width="1.4"/>
+<path d="M8 3 Q24 -6 42 3 Q28 6 8 3Z" fill="#efc772"/>
+<path d="M10 13 Q24 21 39 14" fill="none" stroke="#fff0ba" opacity=".55" stroke-width=".85"/>
+<path d="M18 24 Q25 28 32 24" fill="none" stroke="#d6a65f" stroke-width="1.6" stroke-linecap="round"/>
+</g>
+</defs>
+<use href="#talambralu-bowl" transform="translate(39 13) rotate(29)"/>
+<use href="#talambralu-bowl" transform="translate(209 13) scale(-1 1) rotate(29)"/>
+<g class="ritual-rice-grain" style="--pour-x: -9px; --pour-y: -38px; --pour-delay: 0ms"><ellipse cx="92" cy="72" rx="2.9" ry="1.2" transform="rotate(-39 92 72)" fill="#f8de8d"/></g>
+<g class="ritual-rice-grain" style="--pour-x: -17px; --pour-y: -34px; --pour-delay: 73ms"><ellipse cx="100" cy="68" rx="2.9" ry="1.2" transform="rotate(16 100 68)" fill="#e6ae53"/></g>
+<g class="ritual-rice-grain" style="--pour-x: 62px; --pour-y: -42px; --pour-delay: 146ms"><ellipse cx="103" cy="76" rx="2.9" ry="1.2" transform="rotate(60 103 76)" fill="#fff0b4"/></g>
+<g class="ritual-rice-grain" style="--pour-x: 58px; --pour-y: -30px; --pour-delay: 219ms"><ellipse cx="107" cy="64" rx="2.9" ry="1.2" transform="rotate(-28 107 64)" fill="#f8de8d"/></g>
+<g class="ritual-rice-grain" style="--pour-x: -28px; --pour-y: -37px; --pour-delay: 292ms"><ellipse cx="111" cy="71" rx="2.9" ry="1.2" transform="rotate(41 111 71)" fill="#e6ae53"/></g>
+<g class="ritual-rice-grain" style="--pour-x: -33px; --pour-y: -42px; --pour-delay: 365ms"><ellipse cx="116" cy="76" rx="2.9" ry="1.2" transform="rotate(-57 116 76)" fill="#fff0b4"/></g>
+<g class="ritual-rice-grain" style="--pour-x: 48px; --pour-y: -32px; --pour-delay: 438ms"><ellipse cx="117" cy="66" rx="2.9" ry="1.2" transform="rotate(28 117 66)" fill="#f8de8d"/></g>
+<g class="ritual-rice-grain" style="--pour-x: 44px; --pour-y: -38px; --pour-delay: 511ms"><ellipse cx="121" cy="72" rx="2.9" ry="1.2" transform="rotate(-13 121 72)" fill="#e6ae53"/></g>
+<g class="ritual-rice-grain" style="--pour-x: -41px; --pour-y: -29px; --pour-delay: 14ms"><ellipse cx="124" cy="63" rx="2.9" ry="1.2" transform="rotate(56 124 63)" fill="#fff0b4"/></g>
+<g class="ritual-rice-grain" style="--pour-x: -43px; --pour-y: -43px; --pour-delay: 87ms"><ellipse cx="126" cy="77" rx="2.9" ry="1.2" transform="rotate(-15 126 77)" fill="#f8de8d"/></g>
+<g class="ritual-rice-grain" style="--pour-x: 35px; --pour-y: -34px; --pour-delay: 160ms"><ellipse cx="130" cy="68" rx="2.9" ry="1.2" transform="rotate(25 130 68)" fill="#e6ae53"/></g>
+<g class="ritual-rice-grain" style="--pour-x: 32px; --pour-y: -40px; --pour-delay: 233ms"><ellipse cx="133" cy="74" rx="2.9" ry="1.2" transform="rotate(63 133 74)" fill="#fff0b4"/></g>
+<g class="ritual-rice-grain" style="--pour-x: -52px; --pour-y: -31px; --pour-delay: 306ms"><ellipse cx="135" cy="65" rx="2.9" ry="1.2" transform="rotate(-55 135 65)" fill="#f8de8d"/></g>
+<g class="ritual-rice-grain" style="--pour-x: -55px; --pour-y: -36px; --pour-delay: 379ms"><ellipse cx="138" cy="70" rx="2.9" ry="1.2" transform="rotate(47 138 70)" fill="#e6ae53"/></g>
+<g class="ritual-rice-grain" style="--pour-x: 21px; --pour-y: -41px; --pour-delay: 452ms"><ellipse cx="144" cy="75" rx="2.9" ry="1.2" transform="rotate(14 144 75)" fill="#fff0b4"/></g>
+<g class="ritual-rice-grain" style="--pour-x: 19px; --pour-y: -33px; --pour-delay: 525ms"><ellipse cx="146" cy="67" rx="2.9" ry="1.2" transform="rotate(-36 146 67)" fill="#f8de8d"/></g>
+<g class="ritual-rice-grain" style="--pour-x: -69px; --pour-y: -37px; --pour-delay: 28ms"><ellipse cx="152" cy="71" rx="2.9" ry="1.2" transform="rotate(58 152 71)" fill="#e6ae53"/></g>
+<g class="ritual-rice-grain" style="--pour-x: -74px; --pour-y: -40px; --pour-delay: 101ms"><ellipse cx="157" cy="74" rx="2.9" ry="1.2" transform="rotate(-18 157 74)" fill="#fff0b4"/></g>
+</svg>
 </details>
 <details>
 <summary><span lang="te">సప్తపది</span><strong>Saptapadi</strong></summary>
 <p>Together, they take seven steps before the sacred fire, each step expressing a promise for their shared life.</p>
+<svg class="ritual-art ritual-steps" viewBox="0 0 282 55" aria-hidden="true">
+<defs>
+<g id="ritual-footprint">
+<path d="M-2 8 C-0.8 9.3 1.6 9 2.5 7.3 C3.4 5.2 1.8 3.5 2.9 0.8 C4.2 -2.1 3.5 -5.2 1 -5.8 C-1.5 -6.2 -3.6 -4 -3.6 -1.6 C-3.6 1.1 -2 2.7 -2.5 5.3 C-2.8 6.6 -2.7 7.4 -2 8 Z"/>
+<circle cx="2.1" cy="-8.4" r="1.65"/>
+<circle cx="-0.8" cy="-9.6" r="1.16"/>
+<circle cx="-3.05" cy="-8.8" r="0.95"/>
+<circle cx="-4.65" cy="-7.3" r="0.76"/>
+<circle cx="-5.35" cy="-5.55" r="0.63"/>
+</g>
+<g id="ritual-footprint-pair">
+<use href="#ritual-footprint" transform="translate(-5 3) rotate(14)"/>
+<use href="#ritual-footprint" transform="translate(6 -3) scale(-1 1) rotate(-20)"/>
+</g>
+</defs>
+<use class="ritual-step" href="#ritual-footprint-pair" x="19" y="33" style="--step: 0"/>
+<use class="ritual-step" href="#ritual-footprint-pair" x="59" y="27" style="--step: 1"/>
+<use class="ritual-step" href="#ritual-footprint-pair" x="100" y="23" style="--step: 2"/>
+<use class="ritual-step" href="#ritual-footprint-pair" x="141" y="21" style="--step: 3"/>
+<use class="ritual-step" href="#ritual-footprint-pair" x="182" y="23" style="--step: 4"/>
+<use class="ritual-step" href="#ritual-footprint-pair" x="223" y="27" style="--step: 5"/>
+<use class="ritual-step" href="#ritual-footprint-pair" x="263" y="33" style="--step: 6"/>
+</svg>
 </details>
 </div>
 </section>

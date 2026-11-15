@@ -1,0 +1,92 @@
+.card-toranam {
+  display: block;
+  width: min(100%, 500px);
+  height: auto;
+  margin: -13px auto 9px;
+}
+
+.ritual-art {
+  display: block;
+  height: auto;
+  margin: 11px auto 3px;
+  pointer-events: none;
+}
+.ritual-knot,
+.ritual-ingredients,
+.ritual-rice { width: min(86%, 255px); }
+.ritual-cumin { --ingredient-x: -42px; }
+.ritual-jaggery { --ingredient-x: 40px; }
+.ritual-thread {
+  fill: none;
+  stroke: #e9c98a;
+  stroke-width: 2.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 2px #ffdd9b55);
+}
+.ritual-steps {
+  width: min(100%, 310px);
+  fill: #ebca8c;
+}
+.ritual-step:nth-of-type(even) { fill: #fadcb2; }
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  .motion-ready #traditional-dialog[open] .subhalekha:not([hidden]) .card-toranam {
+    animation: toranam-unfurl 850ms 70ms cubic-bezier(.2, .7, .3, 1) both;
+  }
+  .motion-ready .ritual-list details[open] .ritual-thread {
+    stroke-dasharray: 1;
+    animation: ritual-tie 1400ms 90ms ease-in-out both;
+  }
+  .motion-ready .ritual-list details[open] .ritual-step {
+    animation: ritual-footfall 420ms calc(90ms + var(--step) * 145ms) ease-out both;
+  }
+  .motion-ready .ritual-list details[open] :is(.ritual-cumin, .ritual-jaggery) {
+    animation: ritual-ingredients-gather 1000ms 100ms cubic-bezier(.25, .6, .3, 1) both;
+  }
+  .motion-ready .ritual-list details[open] .ritual-jaggery { animation-delay: 180ms; }
+  .motion-ready .ritual-list details[open] .ritual-rice-grain {
+    animation: ritual-rice-pour 830ms calc(130ms + var(--pour-delay)) ease-in both;
+  }
+}
+
+@keyframes toranam-unfurl {
+  from {
+    clip-path: inset(0 50% 0 50%);
+    transform: translateY(-4px) scaleY(.78);
+    opacity: .4;
+  }
+  to { clip-path: inset(0); }
+}
+@keyframes ritual-tie {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes ritual-footfall {
+  from { opacity: 0; translate: 0 -4px; }
+  to { opacity: 1; translate: 0; }
+}
+
+@keyframes ritual-ingredients-gather {
+  from { opacity: 0; translate: var(--ingredient-x) -24px; }
+  25% { opacity: 1; }
+  to { opacity: 1; translate: 0; }
+}
+@keyframes ritual-rice-pour {
+  from { opacity: 0; translate: var(--pour-x) var(--pour-y); }
+  18% { opacity: 1; }
+  48% { translate: calc(var(--pour-x) * .48) calc(var(--pour-y) - 9px); }
+  to { opacity: 1; translate: 0; }
+}
+
+@media (max-width: 700px) {
+  .card-toranam { margin-top: -6px; }
+}
+@media print {
+  .card-toranam {
+    width: min(100%, 320px);
+    max-height: 25px;
+    margin: -3px auto 2px;
+    object-fit: contain;
+  }
+}
