@@ -1068,6 +1068,9 @@ h1 {
   color:#dec28c}
 .reception h3,.reception .event-location {
   color:#fff4df}
+.reception .ceremony-time {
+  color:#fff4df;
+  margin-bottom:12px}
 .reception .event-intro,.reception .event-location span,.reception .event-link {
   color:#e4d1c8}
 .reception .event-link {
@@ -2295,7 +2298,7 @@ html:not(.motion-ready) .blessing-petals {
 }
 
 
-/* Traditional card, interactive mandapam, and external guest photo collection. */
+/* Traditional card and external guest photo collection. */
 #traditional-open {
   font-size:12px}
 .guest-controls {
@@ -2506,7 +2509,7 @@ html[lang=te] .guest-photos h2 {
 }
 
 @media print {
-  .illustrated-invitation,.guest-photos {
+  .guest-photos {
   display:none}
 body.printing-card>*:not(#traditional-dialog) {
   display:none!important}
@@ -2578,6 +2581,10 @@ html[lang="te"] .parents .parent-names {font-size:clamp(23px,3vw,32px);line-heig
 .card-deities { display:block; width:min(100%, 440px); height:auto; margin:18px auto 10px; border:1px solid #c7a569; }
 .card-parent-line span, .card-signoff strong span { display:block; }
 .card-signoff strong { display:block; }
+.groom-family { margin-top: 24px; }
+.card-family { margin-top: 14px; }
+.card-family small { display: block; margin-bottom: 3px; }
+body.printing-card .card-family { margin-top: 7px; }
 @media (max-width:620px) { .card-deities { margin:12px auto 8px; } }
 @media print { .card-deities { width:270px; margin:6px auto; } }
 

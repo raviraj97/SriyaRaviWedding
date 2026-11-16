@@ -23,7 +23,7 @@
     languageButton.textContent=next==='en'?'తెలుగు':'English';languageButton.lang=next==='en'?'te':'en';
     languageButton.setAttribute('aria-label',next==='en'?'View invitation in Telugu':'View invitation in English');
     document.title=next==='en'?'Sriya & Sai RaviRaj · You’re invited':'శ్రియ & సాయి రవిరాజ్ · శుభ వివాహ ఆహ్వానం';
-    sync();update();updateCelebration();updateBlessingText();renderIllustration();
+    sync();update();updateCelebration();updateBlessingText();
   }
   languageButton.addEventListener('click',()=>setLanguage(language==='en'?'te':'en'));
 
@@ -284,36 +284,6 @@
     for(let i=0;i<22;i++){const petal=document.createElement('i');petal.style.cssText=`--x:${5+(i*37)%90}%;--delay:${(i%6)*.09}s;--drift:${(i%2?1:-1)*(12+i)}px;--petal:${['#c19245','#d3a0a1','#f0ce8a'][i%3]}`;petals.append(petal);}
     petalTimer=setTimeout(()=>petals.replaceChildren(),3300);
   });
-  const mandapam = document.getElementById('illustration');
-  const sceneControls = mandapam.querySelector('.mandapam-controls');
-  const sceneButtons = [...sceneControls.querySelectorAll('button')];
-  const storyFields = ['kicker', 'heading', 'description'].map(field =>
-    document.getElementById('illustration-' + field)
-  );
-  const sceneCopy={couple:['THE TWO OF US','Sriya & Sai RaviRaj','Two journeys, one new beginning. We cannot wait to share it with you.'],moment:['BENEATH THE MOON','11 February · 1:04 AM','After the reception on 10 February, join us after midnight for our wedding at Summer Green Resort.'],wish:['A LIGHT FOR OUR BEGINNING','Love, laughter, and your blessings.','May our home always be filled with warmth, kindness, and the people we love.']};
-
-  function renderIllustration() {
-    const selection = mandapam.dataset.selected;
-    sceneCopy[selection].forEach((text, index) => {
-      const translated = tr(text);
-      if (storyFields[index].textContent !== translated) storyFields[index].textContent = translated;
-    });
-    sceneButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.scene === selection)));
-  }
-
-  sceneButtons.forEach(button => button.addEventListener('click', () => {
-    mandapam.classList.remove('is-scene-animating');
-    mandapam.dataset.selected = button.dataset.scene;
-    renderIllustration();
-    if (enabled) {
-      // Commit the reset so the active detail can replay on a second press.
-      void mandapam.offsetWidth;
-      mandapam.classList.add('is-scene-animating');
-    }
-  }));
-  sceneControls.hidden = false;
-  mandapam.querySelector('.illustration-hint').hidden = false;
-
   const traditionalDialog=document.querySelector('#traditional-dialog');
   let bodyOverflow='';
   const cardTelugu=document.querySelector('.subhalekha[lang="te"]');
@@ -330,9 +300,23 @@
   cardEnglishButton.addEventListener('click',()=>setCardLanguage('en'));
   document.querySelector('#traditional-open').addEventListener('click',()=>{
     takeOver();bodyOverflow=document.body.style.overflow;document.body.style.overflow='hidden';
-    setCardLanguage(language);traditionalDialog.showModal();traditionalDialog.scrollTop=0;
+    setCardLanguage('te');traditionalDialog.showModal();traditionalDialog.scrollTop=0;
   });
   document.querySelector('#traditional-close').addEventListener('click',()=>traditionalDialog.close());
+  function isCardBackdrop(event) {
+    if (event.target !== traditionalDialog) return false;
+    const bounds = traditionalDialog.getBoundingClientRect();
+    return event.clientX < bounds.left || event.clientX >= bounds.right ||
+      event.clientY < bounds.top || event.clientY >= bounds.bottom;
+  }
+  let startedOnBackdrop = false;
+  traditionalDialog.addEventListener('pointerdown', event => {
+    startedOnBackdrop = isCardBackdrop(event);
+  });
+  traditionalDialog.addEventListener('click', event => {
+    if (startedOnBackdrop && isCardBackdrop(event)) traditionalDialog.close();
+    startedOnBackdrop = false;
+  });
   traditionalDialog.addEventListener('close',()=>{document.body.style.overflow=bodyOverflow;document.body.classList.remove('printing-card');document.querySelector('#traditional-open').focus({preventScroll:true});});
   document.querySelector('#traditional-print').addEventListener('click',()=>{document.body.classList.add('printing-card');window.print();});
   addEventListener('beforeprint',()=>{if(traditionalDialog.open)document.body.classList.add('printing-card');});
