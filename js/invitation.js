@@ -284,16 +284,36 @@
     for(let i=0;i<22;i++){const petal=document.createElement('i');petal.style.cssText=`--x:${5+(i*37)%90}%;--delay:${(i%6)*.09}s;--drift:${(i%2?1:-1)*(12+i)}px;--petal:${['#c19245','#d3a0a1','#f0ce8a'][i%3]}`;petals.append(petal);}
     petalTimer=setTimeout(()=>petals.replaceChildren(),3300);
   });
-  // Each illustration detail is a real keyboard-accessible button.
-  let selectedScene='couple';
+  const mandapam = document.getElementById('illustration');
+  const sceneControls = mandapam.querySelector('.mandapam-controls');
+  const sceneButtons = [...sceneControls.querySelectorAll('button')];
+  const storyFields = ['kicker', 'heading', 'description'].map(field =>
+    document.getElementById('illustration-' + field)
+  );
   const sceneCopy={couple:['THE TWO OF US','Sriya & Sai RaviRaj','Two journeys, one new beginning. We cannot wait to share it with you.'],moment:['BENEATH THE MOON','11 February · 1:04 AM','After the reception on 10 February, join us after midnight for our wedding at Summer Green Resort.'],wish:['A LIGHT FOR OUR BEGINNING','Love, laughter, and your blessings.','May our home always be filled with warmth, kindness, and the people we love.']};
-  function renderIllustration(){
-    const copy=sceneCopy[selectedScene];
-    ['illustration-kicker','illustration-heading','illustration-description'].forEach((id,i)=>document.getElementById(id).textContent=tr(copy[i]));
-    document.querySelector('.mandapam-scene').dataset.selected=selectedScene;
-    document.querySelectorAll('[data-scene]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.scene===selectedScene)));
+
+  function renderIllustration() {
+    const selection = mandapam.dataset.selected;
+    sceneCopy[selection].forEach((text, index) => {
+      const translated = tr(text);
+      if (storyFields[index].textContent !== translated) storyFields[index].textContent = translated;
+    });
+    sceneButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.scene === selection)));
   }
-  document.querySelectorAll('[data-scene]').forEach(button=>button.addEventListener('click',()=>{selectedScene=button.dataset.scene;renderIllustration();}));
+
+  sceneButtons.forEach(button => button.addEventListener('click', () => {
+    mandapam.classList.remove('is-scene-animating');
+    mandapam.dataset.selected = button.dataset.scene;
+    renderIllustration();
+    if (enabled) {
+      // Commit the reset so the active detail can replay on a second press.
+      void mandapam.offsetWidth;
+      mandapam.classList.add('is-scene-animating');
+    }
+  }));
+  sceneControls.hidden = false;
+  mandapam.querySelector('.illustration-hint').hidden = false;
+
   const traditionalDialog=document.querySelector('#traditional-dialog');
   let bodyOverflow='';
   const cardTelugu=document.querySelector('.subhalekha[lang="te"]');

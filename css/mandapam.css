@@ -1,0 +1,121 @@
+.illustrated-invitation {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  grid-template-areas: 'heading scene' 'story scene';
+  gap: 26px clamp(28px, 5vw, 65px);
+  align-items: center;
+  width: min(100%, 1040px);
+  margin: 0 auto clamp(34px, 6vw, 75px);
+  padding: 12px 24px clamp(26px, 4vw, 50px);
+}
+.illustration-copy { grid-area: heading; align-self: end; }
+.illustration-copy h2 {
+  margin-top: 7px;
+  color: var(--wine);
+  font: clamp(36px, 4.2vw, 50px)/1.15 var(--serif);
+}
+.illustration-hint {
+  max-width: 31em;
+  margin-top: 14px;
+  color: var(--muted);
+  font: 14px/1.65 var(--sans);
+}
+.illustration-story {
+  grid-area: story;
+  align-self: start;
+  min-height: 158px;
+  padding-top: 19px;
+  border-top: 1px solid var(--line);
+}
+.illustration-story h3 {
+  margin: 8px 0;
+  color: var(--wine);
+  font: clamp(25px, 3vw, 32px)/1.2 var(--serif);
+}
+.illustration-story > p:last-child { color: var(--muted); font: 15px/1.7 var(--sans); }
+html[lang=te] .illustration-copy h2,html[lang=te] .illustration-story h3 { line-height: 1.5; }
+
+.mandapam-scene {
+  grid-area: scene;
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 500px);
+  margin-inline: auto;
+}
+.mandapam-art { display: block; width: 100%; height: auto; }
+.mandapam-sky,.mandapam-effects,.mandapam-controls { position: absolute; inset: 0; pointer-events: none; }
+.mandapam-sky,.mandapam-effects { width: 100%; height: 100%; }
+.mandapam-sky { z-index: -1; }
+.mandapam-controls { z-index: 1; }
+.scene-hotspot {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 6px 12px;
+  border: 1px solid #b99a69;
+  border-radius: 24px;
+  background: #fff9ed;
+  color: #653939;
+  box-shadow: 0 2px 9px #56382220;
+  font: 13px/1.35 var(--sans);
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.scene-hotspot[aria-pressed=true] { background: var(--wine); border-color: var(--wine); color: #fff7e6; }
+.scene-hotspot:hover { box-shadow: 0 3px 13px #56382245; }
+.hotspot-couple { left: 50%; bottom: 1%; transform: translateX(-50%); }
+.hotspot-moon { right: 0; top: 18%; }
+.hotspot-lamp { left: 0; bottom: 10%; }
+.mandapam-night,.mandapam-stars,.mandapam-moon-glow,.mandapam-petal,.mandapam-lamp { opacity: 0; }
+.mandapam-moon { fill: #b99a69; }
+[data-selected=moment] :is(.mandapam-night,.mandapam-stars,.mandapam-moon-glow),
+[data-selected=wish] .mandapam-lamp { opacity: 1; }
+[data-selected=moment] .mandapam-moon { fill: #ffe7a7; }
+.mandapam-petal { fill: #db9a78; }
+.mandapam-petal:nth-child(3n + 2) { fill: #f1d6a0; }
+.mandapam-petal:nth-child(3n) { fill: #b96064; }
+
+@media screen {
+  .motion-ready .is-scene-animating[data-selected=couple] .mandapam-petal {
+    animation: mandapam-petal-shower 1550ms var(--delay) ease-in-out both;
+  }
+  .motion-ready .is-scene-animating[data-selected=moment] .mandapam-night { animation: mandapam-nightfall 980ms ease-out both; }
+  .motion-ready .is-scene-animating[data-selected=moment] .mandapam-moon-glow { animation: mandapam-light-rise 1120ms 120ms ease-out both; }
+  .motion-ready .is-scene-animating[data-selected=moment] .mandapam-stars use { animation: mandapam-light-rise 880ms var(--delay) ease-out both; }
+  .motion-ready .is-scene-animating[data-selected=wish] .mandapam-lamp { animation: mandapam-light-rise 1050ms 130ms ease-out both; }
+  .motion-ready .is-scene-animating[data-selected=wish] .mandapam-lamp + .mandapam-lamp { animation-delay: 510ms; }
+}
+@keyframes mandapam-petal-shower {
+  0% { opacity: 0; translate: 0 var(--fall-start, -70px); }
+  22%, 71% { opacity: 1; }
+  100% { opacity: 0; translate: var(--fall-drift, var(--drift)) var(--fall-end, 108px); }
+}
+@keyframes mandapam-nightfall { from { opacity: 0; } to { opacity: 1; } }
+@keyframes mandapam-light-rise {
+  0% { opacity: 0; }
+  60% { opacity: .97; }
+  76% { opacity: .63; }
+  100% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mandapam-petal { --fall-start: 0px; --fall-drift: 0px; --fall-end: 0px; }
+}
+@media (max-width: 700px) {
+  .illustrated-invitation {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'heading' 'scene' 'story';
+    gap: 13px;
+    max-width: 510px;
+    text-align: center;
+  }
+  .illustration-hint { margin-inline: auto; }
+  .illustration-story { min-height: 150px; padding-top: 15px; }
+}
+@media (max-width: 360px) {
+  .scene-hotspot { padding-inline: 9px; font-size: 12px; }
+}
